@@ -34,6 +34,7 @@ CHROME_CANDIDATES = [
     '/opt/google/chrome/chrome',
     '/usr/bin/chromium',
     '/usr/bin/chromium-browser',
+    '/usr/lib/chromium/chromium',
     '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
 ]
 
@@ -96,6 +97,17 @@ def find_chrome():
     for path in CHROME_CANDIDATES:
         if path and os.path.exists(path):
             return path
+    # 兜底：playwright 安装的 chromium
+    try:
+        import glob
+        for pat in ('~/.cache/ms-playwright/chromium*/chrome-linux/chrome',
+                    '/root/.cache/ms-playwright/chromium*/chrome-linux/chrome',
+                    '/opt/playwright/chromium*/chrome-linux/chrome'):
+            hits = glob.glob(os.path.expanduser(pat))
+            if hits:
+                return hits[0]
+    except Exception:
+        pass
     return None
 
 
