@@ -345,8 +345,9 @@ class NewAPICheckin:
                     result['quota_awarded'] = checkin_data.get('quota_awarded')
                 else:
                     message = data.get('message', '签到失败')
-                    already_keywords = ['已签到', '已经签到', 'already', '重复签到']
-                    already_checked_in = any(k in message for k in already_keywords)
+                    msg_lower = message.lower()
+                    already_keywords = ['已签到', '已经签到', 'already', '重复签到', 'checked in today']
+                    already_checked_in = any(k.lower() in msg_lower for k in already_keywords)
                     if already_checked_in:
                         result['success'] = True
                         result['message'] = message
@@ -411,8 +412,8 @@ class NewAPICheckin:
                 timeout=30)
             data = resp.json()
             message = data.get('message', '签到失败')
-            already_keywords = ['已签到', '已经签到', 'already', '重复签到']
-            if data.get('success') or any(k in message for k in already_keywords):
+            already_keywords = ['已签到', '已经签到', 'already', '重复签到', 'checked in today']
+            if data.get('success') or any(k.lower() in message.lower() for k in already_keywords):
                 result['success'] = True
                 result['message'] = f'{message} (PoW)'
                 cd = data.get('data', {})
@@ -453,8 +454,8 @@ class NewAPICheckin:
             return result
 
         message = resp_data.get('message', '签到失败')
-        already_keywords = ['已签到', '已经签到', 'already', '重复签到']
-        if resp_data.get('success') or any(k in message for k in already_keywords):
+        already_keywords = ['已签到', '已经签到', 'already', '重复签到', 'checked in today']
+        if resp_data.get('success') or any(k.lower() in message.lower() for k in already_keywords):
             result['success'] = True
             result['message'] = f'{message} (Turnstile)'
             checkin_data = resp_data.get('data', {})
